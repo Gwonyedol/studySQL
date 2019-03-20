@@ -114,7 +114,7 @@ COMMIT;
 */
 
 
-select * from emp;
+select * from emp; -- select~from테이블 데이터의 검색 결과 집합의 취득
 select * from dept;
 select * from salgrade;
 
@@ -138,8 +138,8 @@ from emp;
 --Oracle 데이터 문자열(문자열 데이터는 대소문자 구문)
 --문자열 표기 '문자열'로 함
 --소문자 a 대문자 A 다른문자 취급
-select empno, ename from emp where enmae='king';
-select empno, ename from emp where enmae='King';
+select empno, ename from emp where ename='king';
+select empno, ename from emp where ename='King';
 
 --Oracle SQL : 연산자(결합연산자(||)와 산술연산자(+) 구분)
 --JAVA : + (숫자+숫자 연산)
@@ -166,8 +166,9 @@ from emp;
 --distinct 원리 : grouping
 --재미삼아서...(group에 group의 데이터)
 select distinct job, deptno from emp order by job;
+--   →job과 deptno의 조합에 대한 유일한 값을 select 
 select distinct deptno, job from emp order by deptno;
-
+--   →컬럼이 한개만 있으면 컬럼의 중복값을 제거함
 
 --Oracle(SQL 언어)
 --JAVA 언어(연산자)
@@ -340,8 +341,7 @@ select comm, nvt(comm,1111)from emp;
 --사원의급여가 1000이상이고 수당을 받지않는 사원의 사번, 이름, 직종, 급여, 수당을 츨력하세요
 select empno,ename,job,sal,comm
 from emp
-where sal > 1000 and comm is null
-;
+where sal > 1000 and comm is null;
 
 
 ---------------------------
@@ -364,8 +364,10 @@ insert into board(boardid, title, content)
 values(100,'오라클','할만');
 select*from board;
 
-rollback;
-commit;
+rollback; --ROLLBACK (트랜잭션 취소)
+commit; --COMMIT (트랜잭션의 실행)
+
+
 
 insert into board(boardid,title,content)
 values(200,'자바','그립다');
@@ -469,7 +471,9 @@ order by job asc, sal desc;
 --합집합 (union all) : 중복값 허용
 
 
-CREATE TABLE uta (name varchar2(20));
+CREATE TABLE uta (
+name varchar2(20)
+);
 
 INSERT INTO uta(name) values('AAA');
 INSERT INTO uta(name) values('BBB');
@@ -481,7 +485,9 @@ select * from uta;
 
 
 
-CREATE table ut(name varchar2(20));
+CREATE table ut(
+name varchar2(20)
+);
 
 INSERT into ut(name) values('AAA');
 INSERT into ut(name) values('BBB');
@@ -508,9 +514,6 @@ select empno, ename from emp
 union
 select dname, deptno from dept;     --대응되는 타입이 다르다
 
-select empno, ename from emp
-union
-select deptno, dname from dept;
 
 
 --실무 > subquery (in line view)
