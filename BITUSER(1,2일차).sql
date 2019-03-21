@@ -551,7 +551,7 @@ select lower('AAA'), upper('aaaa') from dual;
 
 select name, lower(ename) as "ename" from emp;
 
-select * from emp where enmae = 'king';
+select * from emp where ename = 'king';
 
 select * from emp where lower(ename) = 'king';
 
@@ -610,7 +610,9 @@ select rpad(substr('hong1006',1,2),length('hong1006'),'*') from dual;
 select rpad(substr(ename,1,1),length(ename),'*')as "ename" from emp;
 
 create table member2(
-  id number, jumin varchar2(14));
+  id number,
+  jumin varchar2(14)
+  );
   
 insert into member2(id, jumin) values(100,'123456-1234567');
 insert into member2(id, jumin) values(200,'234567-1234567');
@@ -626,7 +628,9 @@ select * from member2;
 --200 : 234567 - *******
 --컬럼의 가명칭 'juminnumber'
 
-select id || ' : ' || rpad(substr(jumin,1,7),length(jumin),'*') as "juminnumber"  from member2
+select id || ' : ' || rpad(substr(jumin,1,7),
+length(jumin),'*') as "juminnumber"  
+from member2
 
 --rtrim 함수
 --[오른쪽 문자] 지워라
@@ -636,7 +640,7 @@ select '>' || rtrim('MILLER' ,'') || '<' from dual;
 
 
 --치환함수 (replace)
-select ename, replace(enmae,'A','와우') from emp;
+select ename, replace(ename,'A','와우') from emp;
 
 ----------------------문자열함수 (END)-------------------------
 
@@ -645,6 +649,8 @@ select ename, replace(enmae,'A','와우') from emp;
 --trunc (절삭함수)
 --나머지 구하는 함수 (mod)
 
+--round
+select round(12.567,3) as "r" from dual;
 
 --trunc (반올림 하지 않고 버려요)
 select trunc(12.345,0) as "r" from dual; --12, 정수 부분만 남겨라
@@ -657,7 +663,7 @@ select trunc(12.345,-1) as "r" from dual; --10
 select trunc(15.345,-1) as "r" from dual; --20
 
 --나머지
-select 12/10 from dual; --12
+select 12/10 from dual; --1.2
 select mod(12,10) from dual; --나머지 (2)
 select mod(0,0) from dual; --0
 

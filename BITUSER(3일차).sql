@@ -140,7 +140,8 @@ select*from emp;
 select*from salgrade;
 
 select e.empno,e.ename,e.sal,s.grade
-from emp e join salgrade s
+from emp e 
+join salgrade s
 on e.sal between s.losal and s.hisal; -- on 조건절
 
 -----------------------------------------
@@ -203,107 +204,100 @@ from m,s;
 
 -------------1차 테스트 -----------------
 -- 1. 사원들의 이름, 부서번호, 부서이름을 출력하라. (O)
-select e.ename as "이름" , e.EMPNO as "부서번호" , d.dname as "부서이름"
+
+select e.ename, e.deptno, d.dname
 from emp e
 join dept d
 on e.deptno = d.deptno;
- 
+
+
 -- 2. DALLAS에서 근무하는 사원의 이름, 직위, 부서번호, 부서이름을
 -- 출력하라. (O)
 
-select e.ename as "이름" , e.job as "직업" , d.dname as "부서이름" , e.deptno as "부서번호"
+select e.ename, e.job, d.deptno, d.dname
 from emp e
 join dept d
-on e.deptno = d.deptno and d.deptno = 20;
---예지 풀이--
-select e.ename as "이름" , e.job as "직업" , d.dname as "부서이름" , e.deptno as "부서번호"
-from emp e
-join dept d
-on e.deptno = d.deptno
-where d.loc = 'DALLAS';
---선생님 풀이--
- 
+on e.deptno = d.DEPTNO and d.loc = 'DALLAS';
+
+
 -- 3. 이름에 'A'가 들어가는 사원들의 이름과 부서이름을 출력하라. (O)
-select e.ename as "이름", d.dname as "부서"
+
+select e.ename, d.dname
 from emp e
 join dept d
-on e.DEPTNO = d.DEPTNO and ename like'%A%';
---이것도 되니까 질문해야겠다!--
-select e.ename as "이름", d.dname as "부서"
-from emp e
-join dept d
-on e.DEPTNO = d.DEPTNO
-where ename like'%A%';
+on e.deptno = d.deptno 
+where ename like '%A%';
+
 
 -- 4. 사원이름과 그 사원이 속한 부서의 부서명, 그리고 월급을
 --출력하는데 월급이 3000이상인 사원을 출력하라. (O)
 
-select e.ename as "이름", d.dname as "부서명" ,e.sal as "월급"
+select e.ename, d.dname, d.deptno, e.SAL
 from emp e
 join dept d
-on e.DEPTNO = d.DEPTNO
-where e.sal>=3000;
-
-select e.ename as "이름", d.dname as "부서명" ,e.sal as "월급"
-from emp e
-join dept d
-on e.DEPTNO = d.DEPTNO and e.sal>=3000;
+on e.deptno = d.deptno
+where sal>=3000;
 
 -- 5. 직위(직종)가 'SALESMAN'인 사원들의 직위와 그 사원이름, 그리고
 -- 그 사원이 속한 부서 이름을 출력하라. (O)
-select e.ename as "이름", e.job as "직위", d.dname as "부서" 
+
+select e.ename, e.job, d.dname
 from emp e
 join dept d
-on e.DEPTNO = d.DEPTNO and e.job = 'SALESMAN';
+on e.deptno = d.deptno
+where e.job = 'SALESMAN';
 
 -- 6. 커미션이 책정된 사원들의 사원번호, 이름, 연봉, 연봉+커미션,
 -- 급여등급을 출력하되, 각각의 컬럼명을 '사원번호', '사원이름',
 -- '연봉','실급여', '급여등급'으로 하여 출력하라.
 --(비등가 ) 1 : 1 매핑 대는 컬럼이 없다 (X)
 
-select e.ename as "사원이름", e.empno as "번호", e.sal*12 as "연봉" ,
-e.sal*12+nvl(e.comm,0) as "실급여", s.grade as "급여등급" 
+select e.ename, e.sal, e.sal+nvl(e.comm,0) as "실수령액" , s.grade as "급여등급"
 from emp e
-join dept d
-on e.deptno = d.deptno 
 join salgrade s
-on e.sal between s.losal and s.hisal;
-
- 
- 
- 
- 
- 
- 
- 
+on e.sal between losal and hisal;
  
 -- 7. 부서번호가 10번인 사원들의 부서번호, 부서이름, 사원이름,
 -- 월급, 급여등급을 출력하라.
 
---이쪽 수업시간에도 이해를 잘 못해서 복습해야될것같다..
-select*
-from salgrade;
- 
-select*
-from dept;
+select e.ename, d.deptno, d.dname, e.SAL, s.grade as "급여등급"
+from emp e
+join dept d
+on e.deptno = d.deptno
+join salgrade s
+on e.sal between losal and hisal;
+
  
 -- 8. 부서번호가 10번, 20번인 사원들의 부서번호, 부서이름,
 -- 사원이름, 월급, 급여등급을 출력하라. 그리고 그 출력된
 -- 결과물을 부서번호가 낮은 순으로, 월급이 높은 순으로
 -- 정렬하라.
-
-select e.ename as "이름", e.sal as "월급" 
-from emp e
-join dept d
-on e.deptno = d.deptno and d.deptno = 10 or d.deptno = 20;
+ 
 
  
+ select e.ename, d.deptno, d.dname, e.sal, s.grade
+ from emp e
+ join dept d
+ on e.deptno = d.deptno
+ join salgrade s
+ on e.sal between losal and s.HISAL
+ where e.deptno = 10 or e.deptno = 20
+ order by d.deptno asc ,e.sal desc;
+
+
 -- 9. 사원번호와 사원이름, 그리고 그 사원을 관리하는 관리자의
 -- 사원번호와 사원이름을 출력하되 각각의 컬럼명을 '사원번호',
 -- '사원이름', '관리자번호', '관리자이름'으로 하여 출력하라.
 --SELF JOIN (자기 자신테이블의 컬럼을 참조 하는 경우)
 
+select e.ename as "사원이름", m.ename as "관지라이름",
+e.empno as "사원번호", m.empno as "관리자번호"
+from emp e
+join emp m
+on e.mgr = m.empno;
 
+--03/21/pm8:11 복습완료 집가서 채점하면서 해설보기
+--문제풀이1번
 
 -------------------------------------------------------
 --[subquery] 오라클 pdf (100 page)
@@ -407,14 +401,6 @@ and sal in (select sal from emp where job = 'SALESMAN');
 -----------QUIZ)
 --자기 부서의 평균 월급보다 더 많은 월급을 받는 사원의 사번,이름,부서번호,부서별 평균 월급 구해라
 
-select empno, ename,  from emp where sal > (select avg(sal) from emp where deptno = 10) ;
-
-
-select avg(sal) from emp where deptno = 20 ;
-
-select avg(sal) from emp where deptno = 30 ;
-
-
 
 select e.deptno
 from emp e
@@ -425,140 +411,96 @@ select deptno,sal
 from emp
 where deptno in (select avg(sal) from emp);
 
+--조별스터디 과제문제03.21--
+--1. 부서별 평균 급여를 구하세요 (제가 이걸 못풀어서 올렸습니다 풀어볼게요..)
+select e.job, round(avg(e.sal),0)
+from emp e
+group by job;
+--2.급여가 10번부서의 최저급여보다 적고, 20번부서에서 일하지
+--않는 모든 사원의 사원번호, 이름, 부서명을 출력하라.
+
+select e.ename, e.empno, d.dname 
+from emp e
+join dept d
+on e.deptno = d.deptno
+where sal<( select min(e.sal) from emp where d.deptno = 10) and
+e.deptno != 20;
+
+--3. 급여가 평균 급여보다 많고, 이름에 'S'가 들어가는
+--사원들의 부서이름,사원이름, 월급, 급여등급을 출력하라.
+--그리고 그 출력된 결과물을 월급이 낮은 순으로정렬하라. -->이거 답이 안나와 ㅠㅠㅠㅠ
+select avg(sal)
+from emp;
+
+select e.ename, d.dname, e.sal , s.grade 
+from emp e
+join dept d
+on e.deptno = d.deptno
+join salgrade s
+on e.sal between s.losal and s.hisal
+where sal>(select avg(sal) from emp) and ename like '%S%'
+order by e.sal asc;
+
+--4.사원정보테이블(Employees table)에서 평균 급여보다 높고, 
+--최대 급여보다 낮은 월급을 받는 사원의 리스트를 출력하라.
+--결과값은 급여를 기준으로 내림차순으로 정렬하세요 (edited) 
+--(참고 HR로 접속해야함)
+
+select ename, sal
+from emp
+where sal>(select avg(sal) from emp) 
+and sal<(select max(sal) from emp)
+order by sal desc;
+
 
 -------------------------------------------------------
 --subquery TEST (3시 45분까지)
+--문제풀이2번
+
 --1. 'SMITH'보다 월급을 많이 받는 사원들의 이름과 월급을 출력하라
-select ename, sal
-from emp
-where sal > (
-select sal
-from emp
-where ename='SMITH'
-);
 
 --2. 10번 부서의 사원들과 같은 월급을 받는 사원들의 이름, 월급
 --부서번호를 출력하라
-select ename, empno, sal
-from emp
-where sal in (
-select sal
-from emp
-where deptno =10
-);
 
 
 --3. 'BLAKE'와 같은 부서에 있는 사원들의 이름과 고용일을 뽑는데
 -- 'BLAKE'는 빼고 출력하라.
 
 
-select ename
-from emp
-where deptno = (select deptno
-from emp
-where ename = 'BLAKE') and ename != 'BLAKE';
-
 
 --4. 평균급여보다 많은 급여를 받는 사원들의 사원번호, 이름, 월급을
 -- 출력하되, 월급이 높은 사람 순으로 출력하라.(다시풀것ㅇㅇㅇㅇㅇㅇㅇㅇ)
 
-select empno, ename, sal
-from emp
-where sal > (select round(avg(sal)) from emp)
-order by sal desc;
-
-select deptno, avg(sal)
-from emp
-group by deptno;
-
 --5. 이름에 'T'를 포함하고 있는 사원들과 같은 부서에서 근무하고
 -- 있는 사원의 사원번호와 이름을 출력하라.
-
-select deptno, ename
-from emp
-where deptno in (select deptno
-from emp
-where ename like '%T%');
-
 
 --6. 30번 부서에 있는 사원들 중에서 가장 많은 월급을 받는 사원보다
 -- 많은 월급을 받는 사원들의 이름, 부서번호, 월급을 출력하라.
 --(단, ALL(and) 또는 ANY(or) 연산자를 사용할 것)
 
-select ename, empno, sal
-from emp
-where sal > (
-select max(sal)
-from emp
-where deptno = 30
-);
-
-
 
 --7. 'DALLAS'에서 근무하고 있는 사원과 같은 부서에서 일하는 사원의
 -- 이름, 부서번호, 직업을 출력하라.
 
-select ename, empno, job
-from emp
-where deptno in (
-select deptno
-from dept
-where loc = 'DALLAS'
-);
 
 --8. SALES 부서에서 일하는 사원들의 부서번호, 이름, 직업을 출력하라.
-
-select empno, ename, job
-from emp
-where deptno in (
-select deptno
-from dept
-where dname = 'SALES'
-);
 
 
 --9. 'KING'에게 보고하는 모든 사원의 이름과 급여를 출력하라
 --king 이 사수인 사람 (mgr 데이터가 king 사번)
-
-select ename, sal
-from emp
-where mgr in (
-select empno
-from emp
-where ename = 'KING'
-);
-
 
 
 --10. 자신의 급여가 평균 급여보다 많고, 이름에 'S'가 들어가는
 -- 사원과 동일한 부서에서 근무하는 모든 사원의 사원번호, 이름,
 -- 급여를 출력하라.
 
-select ename like '%S%'
-from emp
-where sal > avg(sal); --다시풀기!!!!!!!!!!!!!!
-
 
 --11. 커미션을 받는 사원과 부서번호, 월급이 같은 사원의
 -- 이름, 월급, 부서번호를 출력하라.
 
-select
 
 --12. 30번 부서 사원들과 월급과 커미션이 같지 않은
 -- 사원들의 이름, 월급, 커미션을 출력하라.
-
-select ename, sal, comm
-from emp
-where sal not in (
-select sal
-from emp
-where deptno = 30
-) and comm not in (
-select nvl(comm,0)
-from emp
-where deptno = 30
-);
-
 
 
 ----------------------------
@@ -656,7 +598,8 @@ create table temp3(
  regdate date default sysdate -- 기본값 설정하기
  );
  
-select sysdate from dual;
+select sysdate
+from dual;
 alter session set nls_date_format='YYYY-MM-DD HH24:MI:SS';
  
 insert into temp3(memberid, name, regdate)
