@@ -423,7 +423,7 @@ select e.ename, e.empno, d.dname
 from emp e
 join dept d
 on e.deptno = d.deptno
-where sal<( select min(e.sal) from emp where d.deptno = 10) and
+where e.sal<( select min(sal) from emp where deptno = 10) and
 e.deptno != 20;
 
 --3. 급여가 평균 급여보다 많고, 이름에 'S'가 들어가는
@@ -456,38 +456,99 @@ order by sal desc;
 -------------------------------------------------------
 --subquery TEST (3시 45분까지)
 --문제풀이2번
+--1. 'SMITH'보다 월급을 많이 받는 사원들의 이름과 월급을 출력하라s
 
---1. 'SMITH'보다 월급을 많이 받는 사원들의 이름과 월급을 출력하라
+
+select ename, sal
+from emp
+where sal > ( select sal from emp where ename = 'SMITH');
 
 --2. 10번 부서의 사원들과 같은 월급을 받는 사원들의 이름, 월급
 --부서번호를 출력하라
-
+select ename, empno, sal
+from emp
+where sal in (
+select sal
+from emp
+where deptno = 10)
+;
 
 --3. 'BLAKE'와 같은 부서에 있는 사원들의 이름과 고용일을 뽑는데
 -- 'BLAKE'는 빼고 출력하라.
 
 
 
+select ename, hiredate
+from emp
+where deptno = (select deptno
+from emp
+where ename = 'BLAKE') and ename != 'BLAKE';
+
 --4. 평균급여보다 많은 급여를 받는 사원들의 사원번호, 이름, 월급을
 -- 출력하되, 월급이 높은 사람 순으로 출력하라.(다시풀것ㅇㅇㅇㅇㅇㅇㅇㅇ)
 
+select empno, ename , sal
+from emp
+where sal>(select avg(sal)
+from emp)
+order by sal desc;
+
 --5. 이름에 'T'를 포함하고 있는 사원들과 같은 부서에서 근무하고
 -- 있는 사원의 사원번호와 이름을 출력하라.
+
+select ename , empno
+from emp
+where deptno in (select deptno
+from emp
+where ename like '%T%');
 
 --6. 30번 부서에 있는 사원들 중에서 가장 많은 월급을 받는 사원보다
 -- 많은 월급을 받는 사원들의 이름, 부서번호, 월급을 출력하라.
 --(단, ALL(and) 또는 ANY(or) 연산자를 사용할 것)
 
 
+select ename
+from emp
+where sal >(
+select max(sal)
+from emp
+where deptno = 30
+);
+
 --7. 'DALLAS'에서 근무하고 있는 사원과 같은 부서에서 일하는 사원의
 -- 이름, 부서번호, 직업을 출력하라.
+
+select ename, empno, job
+from emp
+where deptno in(select deptno
+from dept
+where loc = 'DALLAS');
+
 
 
 --8. SALES 부서에서 일하는 사원들의 부서번호, 이름, 직업을 출력하라.
 
 
+select e.ename, e.empno, e.job, d.dname
+from emp e
+join dept d
+on e.deptno = d.DEPTNO
+where d.dname = 'SALES';
+
 --9. 'KING'에게 보고하는 모든 사원의 이름과 급여를 출력하라
 --king 이 사수인 사람 (mgr 데이터가 king 사번)
+
+
+
+select ename, sal
+from emp
+where mgr = (
+select empno
+from emp
+where ename = 'KING'
+);
+
+
 
 
 --10. 자신의 급여가 평균 급여보다 많고, 이름에 'S'가 들어가는
@@ -533,92 +594,3 @@ select*from user_tables;
 
 select *from user_tables where table_name = 'DEPT';
 
-
------------------------------------------
---DML(오라클.pdf / 168page)
-/*
-INSERT INTO table_name [(column1[, column2, . . . . . ])]
-VALUES (value1[, value2, . . . . . . ]);
-*/
-
-create table temp(
-id number primary key, -- id칼럼에는 null(x), 중복데이터(x), 유일한 데이터 1건 보장, where id =10
-name varchar2(20)
-);
-
---1.가장 일반적인 insert
-insert into temp(id,name)
-values(100,'홍길동');
-
-select*
-from temp;
-
-commit;
-
---2.컬럼목록 생략(...) 컬럼리스트 생략
-insert into temp values(200,'김유신');
-commit;
-
-select*
-from temp;
-
---Quiz 1(id 칼럼에 pk 제약 정보)
-insert into temp(id,name)
-values(100,'아무개');--중복값 줄 수없다.
-
-
-insert into temp(name)
-values('아무개');
-
--------------------------------------------
---일반 SQL 은 프로그램적인 요소(X)
---PL-SQL(변수,제어문)
---PL-SQL
-
-create table temp2(
-id varchar2(20)
-);
-
---pl-sql 사용
---BEGIN
--- FOR i in 1..1000 LOOP
---  insert into temp2(id) values('a'||to_char(i));
--- END LOOP;
---END;
-
-
-select*from temp2;
-select*from temp2 order by id desc;
-
---------------------------------------------
-
-create table temp3(
- memberid number(3) not null,
- name varchar2(10),
- regdate date default sysdate -- 기본값 설정하기
- );
- 
-select sysdate
-from dual;
-alter session set nls_date_format='YYYY-MM-DD HH24:MI:SS';
- 
-insert into temp3(memberid, name, regdate)
-values(100,'홍길동','2019-03-21');
-
-select*from temp3;
-commit;
-
-insert into temp3(memberid,name)
-values(200,'아무개'); --default
-
-select *from temp3;
-commit;
-
-insert into temp3(memberid)
-values(300);
-commit;
-select* from temp3;
-commit;
-
-insert into temp3(name)
-values('아무개');
